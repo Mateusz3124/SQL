@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <span id="server-msg"></span>
+    </div>
+    <hr>
+    <div>
+        <h2>Add user</h2>
+        <label for="user-name">Username: </label>
+        <input type="text" name="user-name">
+        <br>
+        <label for="user-surname">Surname: </label>
+        <input type="text" name="user-surname">
+        <br>
+        <button id="user-submit-btn">Add</button>
+    </div>
+    <hr>
+    <div>
+        <h2>User list</h2>
+        <button id="user-get-btn">Get users</button>
+        <ul id="user-userlist"></ul>
+    </div>
+
+    <script>
+        const show_server_error_message = (msg) => {
+            const server_err_msg = document.getElementById("server-msg");
+            server_err_msg.style.color = "red"
+            server_err_msg.textContent = msg
+        }
+        const clear_server_error_message = () => {
+            show_server_error_message("")
+        }
+        const set_server_response_message = (msg) => {
+            const server_err_msg = document.getElementById("server-msg");
+            server_err_msg.style.color = "green"
+            server_err_msg.textContent = msg
+        }
+        const print_server_response = (res) => {
+            if(!res.ok) {
+                show_server_error_message(res.statusText)
+            } else { set_server_response_message(res.statusText); }
+        }
+        
+        document.getElementById("user-submit-btn").onclick = () => {
+            const user_name = document.querySelector("input[name=user-name]")
+            const user_surname = document.querySelector("input[name=user-surname]")
+
+            fetch("/adduser", {
+                method: "POST",
+                mode: "same-origin",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({name: user_name.value, surname: user_surname.value})
+            }).then(res => { print_server_response(res) })
+        }
+
+        document.getElementById("user-get-btn").onclick = () => {
+            fetch("/getusers").then(async res => {
+                print_server_response(res)
+                if(res.ok) {
+                    const data = await res.json()
+                    const user_userlist = document.getElementById("user-userlist")
+                    while(user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
+                    for(const user of data) {
+                        const li = document.createElement("li")
+                        li.textContent = `Username: ${user.name}, Surname: ${user.surname}`
+                        user_userlist.appendChild(li)
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>
