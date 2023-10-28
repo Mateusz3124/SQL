@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "jest": "^29.7.0",
+    "mysql": "^2.18.1",
     "mysql2": "^3.6.2",
     "save-dev": "^0.0.1-security"
   }
