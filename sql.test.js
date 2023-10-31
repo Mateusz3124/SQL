@@ -1,43 +1,44 @@
-const { workOnDataBase, action } = require('./sql.js');
+const sqljs = require('./sql.js')
 
 describe("MySQL Functions", () => {
 
+    const INDEX_DB_NAME = "mytest";
+
     afterAll(async () => {
-        await workOnDataBase("DROP DATABASE IF EXISTS mytest");
+        await sqljs.workOnDataBase("DROP DATABASE IF EXISTS mytest");
     });
 
-    test("createTable should create a database", async () => {
-        await workOnDataBase("CREATE DATABASE IF NOT EXISTS mytest");
-        const [result] = await workOnDataBase('SHOW DATABASES');
+    test("should create a database with table", async () => {
+        await sqljs.index_create_db(INDEX_DB_NAME);
+        const [result] = await sqljs.workOnDataBase('SHOW DATABASES');
+        const [result2] = await sqljs.action("SHOW TABLES", INDEX_DB_NAME);
         expect(result.some((obj) => obj.Database === 'mytest')).toBe(true);
+        expect(result2.some((obj) => obj.Tables_in_mytest === 'users')).toBe(true);
     });
 
-    test("action should create table", async () => {
-        await action("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), surname VARCHAR(255), address VARCHAR(255))", "mytest");
-        const [result] = await action("SHOW TABLES", "mytest");
-        expect(result.some((obj) => obj.Tables_in_mytest === 'users')).toBe(true);
+    test("index_create should create user", async () => {
+        const newuser = new sqljs.DBUser("Marcin", "Kwiatkowski")
+        await sqljs.index_create(newuser, INDEX_DB_NAME);
+        const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
+        expect(result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Kwiatkowski')).toBe(true);
     });
 
-    test("action should insert and read information", async () => {
-        await action("INSERT INTO users (name, surname, address) VALUES ('Marcin', 'Kowalski', 'piaskowa 2')", "mytest");
-        const [result] = await action("SELECT * FROM users", "mytest");
-        expect(result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Kowalski' && obj.address === 'piaskowa 2')).toBe(true);
+    test("index_update should update given information", async () => {
+        const olduser = new sqljs.DBUser("Marcin", "Kwiatkowski")
+        const newuser = new sqljs.DBUser("Marcin", "Bogaczewicz")
+        await sqljs.index_update(olduser, newuser, INDEX_DB_NAME)
+        const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
+        expect(result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Bogaczewicz')).toBe(true);
     });
 
-    test("action should update given information", async () => {
-        await action("INSERT INTO users (name, surname, address) VALUES ('Marcin', 'Bogaczewicz', 'piaskowa 21')", "mytest");
-        await action("UPDATE users SET address = 'piaskowa 201' WHERE surname = 'Bogaczewicz'", "mytest");
-        const [result] = await action("SELECT * FROM users", "mytest");
-        expect(result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Bogaczewicz' && obj.address === 'piaskowa 201')).toBe(true);
-    });
-
-    test("action should delete information", async () => {
-        await action("INSERT INTO users (name, surname, address) VALUES ('Marcin', 'Socha', 'piaskowa 212')", "mytest");
-        const [result] = await action("SELECT * FROM users", "mytest");
-        const test1 = result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha' && obj.address === 'piaskowa 212')
-        await action("DELETE FROM users WHERE surname = 'Socha'", "mytest");
-        const [result2] = await action("SELECT * FROM users", "mytest");
-        const test2 = result2.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha' && obj.address === 'piaskowa 212')
+    test("index_delete should delete information", async () => {
+        await sqljs.action("INSERT INTO users (name, surname) VALUES ('Marcin', 'Socha')",INDEX_DB_NAME);
+        const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
+        const test1 = result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha')
+        const userToDelete = new sqljs.DBUser("Marcin", "Socha")
+        await sqljs.index_delete(userToDelete, INDEX_DB_NAME);
+        const [result2] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
+        const test2 = result2.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha')
         expect(test1 && !test2).toBe(true);
     });
 
