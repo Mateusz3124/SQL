@@ -1,10 +1,11 @@
 var mysql = require('mysql2/promise');
 
+// Stworzona baza danych
 async function workOnDataBase(sql) {
     var connection = await mysql.createConnection({
         host: "localhost",
-        user: "root",
-        password: "root",
+        user: "root",  // wpisz własne
+        password: "root",   // wpisz własne
     });
 
     try {
@@ -15,12 +16,13 @@ async function workOnDataBase(sql) {
     }
 }
 
-async function action(sql, data, query_values) {
+// funkcja do wysyłania żądan do bazy danych
+async function action(sql, db, query_values) {
     var connection = await mysql.createConnection({
         host: "localhost",
-        user: "root",
-        password: "root",
-        database: data
+        user: "root",   //wpisz własne
+        password: "root",    //wpisz własne na zmiane hasła w sql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
+        database: db
     });
 
     try {
@@ -28,21 +30,6 @@ async function action(sql, data, query_values) {
         return result;
     } finally {
         await connection.end();
-    }
-}
-
-async function test() {
-    try {
-        await workOnDataBase("CREATE DATABASE IF NOT EXISTS mydb");
-        await action("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), surname VARCHAR(255), address VARCHAR(255))", "mydb");
-        var [resulter] = await action("SHOW TABLES", "mydb");
-        console.log(resulter);
-        await action("INSERT INTO users (name, surname, address) VALUES ('Marcin', 'Kowalski', 'piaskowa 2')", "mydb");
-        //var result = await action("SELECT * FROM users");
-        //console.log(result[0]);
-        console.log(await action("UPDATE users SET address = 'piaskowa 123' WHERE address = 'piaskowa 2'", "mydb"));
-    } catch (err) {
-        console.error(err);
     }
 }
 
@@ -57,77 +44,72 @@ class DBUser {
     }
 }
 
-const INDEX_DB_NAME = "indexdb";
-
-async function index_create_db() {
+async function index_create_db(name) {
     try {
-        await workOnDataBase(`CREATE DATABASE IF NOT EXISTS ${INDEX_DB_NAME}`);
-        await action("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), surname VARCHAR(255))", INDEX_DB_NAME);
+        await workOnDataBase(`CREATE DATABASE IF NOT EXISTS ${name}`);
+        await action("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), surname VARCHAR(255))", name);
     } catch (err) {
         console.error(err);
     }
 }
 
-async function index_get_user(user) {
+async function index_get_user(user, DBname) {
     if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [rows] = await action(
         'SELECT * FROM `users` WHERE `name` = ? AND `surname` = ?', 
-        INDEX_DB_NAME,
+        DBname,
         [user.name, user.surname]);
 
     return rows;
 }
 
-async function index_get_all_users() {
+async function index_get_all_users(name) {
    const [rows] = await action(
-        'SELECT * FROM `users`', INDEX_DB_NAME
+        'SELECT * FROM `users`', name
    ) 
    return rows
 }
 
-async function index_create_user(user) {
+async function index_create_user(user, DBname) {
     if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [result] = await action(
         'INSERT INTO `users` (`name`, `surname`) VALUES (?, ?)', 
-        INDEX_DB_NAME,
+        DBname,
         [user.name, user.surname]);
 
     return result;
 }
 
-async function index_delete_user(user) {
+async function index_delete_user(user, DBname) {
     if (!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [result] = await action(
         'DELETE FROM `users` WHERE `name` = ? AND `surname` = ?', 
-        INDEX_DB_NAME,
+        DBname,
         [user.name, user.surname]
     );
 
     return result;
 }
 
-async function index_update_user(user_toupdate, user_updated) {
+async function index_update_user(user_toupdate, user_updated, DBname) {
     const [result] = await action(
         'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?', 
-        INDEX_DB_NAME,
+        DBname,
         [user_updated.name, user_updated.surname, user_toupdate.name, user_toupdate.surname]
     );
 
     return result;
 }
 
-// Dodane na potrzeby index.js
 
-//test()
+// Dodane na potrzeby index.js
 
 module.exports = {
     workOnDataBase,
     action,
-
-    //Dodane na potrzeby index.js
     index_create_db,
     index_get_user,
     index_get_all_users,
