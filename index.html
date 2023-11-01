@@ -12,13 +12,67 @@
     <hr>
     <div>
         <h2>Add user</h2>
-        <label for="user-name">Username: </label>
-        <input type="text" name="user-name">
-        <br>
-        <label for="user-surname">Surname: </label>
-        <input type="text" name="user-surname">
-        <br>
-        <button id="user-submit-btn">Add</button>
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" name="user-name-add">
+                </td>
+            </tr>
+            <tr>
+                <td>Surname:</td>
+                <td>
+                    <input type="text" name="user-surname-add">
+                </td>
+            </tr>
+        </table>
+        <button id="user-submit-btn-add">Add</button>
+    </div>
+    <hr>
+    <div>
+        <h2>Delete user</h2>
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" name="user-name-delete">
+                </td>
+            </tr>
+            <tr>
+                <td>Surname:</td>
+                <td>
+                    <input type="text" name="user-surname-delete">
+                </td>
+            </tr>
+        </table>
+        <button id="user-submit-btn-delete">Delete</button>
+    </div>
+    <hr>
+    <div>
+        <h2>Update user</h2>
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" name="user-name-toupdate">
+                </td>
+                <td>Username Updated:</td>
+                <td>
+                    <input type="text" name="user-name-updated">
+                </td>
+            </tr>
+            <tr>
+                <td>Surname:</td>
+                <td>
+                    <input type="text" name="user-surname-toupdate">
+                </td>
+                <td>Surname Updated:</td>
+                <td>
+                    <input type="text" name="user-surname-updated">
+                </td>
+            </tr>
+        </table>
+        <button id="user-submit-btn-update">Update</button>
     </div>
     <hr>
     <div>
@@ -47,9 +101,9 @@
             } else { set_server_response_message(res.statusText); }
         }
         
-        document.getElementById("user-submit-btn").onclick = () => {
-            const user_name = document.querySelector("input[name=user-name]")
-            const user_surname = document.querySelector("input[name=user-surname]")
+        document.getElementById("user-submit-btn-add").onclick = () => {
+            const user_name = document.querySelector("input[name=user-name-add]")
+            const user_surname = document.querySelector("input[name=user-surname-add]")
 
             fetch("/adduser", {
                 method: "POST",
@@ -60,6 +114,41 @@
                 body: JSON.stringify({name: user_name.value, surname: user_surname.value})
             }).then(res => { print_server_response(res) })
         }
+        
+        document.getElementById("user-submit-btn-delete").onclick = () => {
+            const user_name_delete = document.querySelector("input[name=user-name-delete]")
+            const user_surname_delete = document.querySelector("input[name=user-surname-delete]")
+
+            fetch(`/deleteuser?name=${user_name_delete.value}&surname=${user_surname_delete.value}`, {
+                method: "DELETE",
+                mode: "same-origin"
+            }).then(res => { 
+                print_server_response(res) 
+            })
+        }
+
+        document.getElementById("user-submit-btn-update").onclick = () => {
+            const user_name_toupdate = document.querySelector("input[name=user-name-toupdate]");
+            const user_surname_toupdate = document.querySelector("input[name=user-surname-toupdate]");
+            const updated_name = document.querySelector("input[name=user-name-updated]");
+            const updated_surname = document.querySelector("input[name=user-surname-updated]");
+
+            fetch("/updateuser", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    nameToUpdate: user_name_toupdate.value, 
+                    surnameToUpdate: user_surname_toupdate.value,
+                    updatedName: updated_name.value,
+                    updatedSurname: updated_surname.value
+                })
+            }).then(response => {
+                print_server_response(res) 
+            })
+        };
+
 
         document.getElementById("user-get-btn").onclick = () => {
             fetch("/getusers").then(async res => {

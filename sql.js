@@ -5,7 +5,7 @@ async function workOnDataBase(sql) {
     var connection = await mysql.createConnection({
         host: "localhost",
         user: "root",  // wpisz własne
-        password: "rooter",   // wpisz własne
+        password: "root",   // wpisz własne
     });
 
     try {
@@ -17,12 +17,12 @@ async function workOnDataBase(sql) {
 }
 
 // funkcja do wysyłania żądan do bazy danych
-async function action(sql, data, query_values) {
+async function action(sql, db, query_values) {
     var connection = await mysql.createConnection({
         host: "localhost",
         user: "root",   //wpisz własne
-        password: "rooter",    //wpisz własne na zmiane hasła w sql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
-        database: data
+        password: "root",    //wpisz własne na zmiane hasła w sql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
+        database: db
     });
 
     try {
@@ -53,12 +53,12 @@ async function index_create_db(name) {
     }
 }
 
-async function index_get_user(user, name) {
+async function index_get_user(user, DBname) {
     if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [rows] = await action(
         'SELECT * FROM `users` WHERE `name` = ? AND `surname` = ?', 
-        name,
+        DBname,
         [user.name, user.surname]);
 
     return rows;
@@ -71,45 +71,51 @@ async function index_get_all_users(name) {
    return rows
 }
 
-async function index_create(user, name) {
+async function index_create_user(user, DBname) {
     if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [result] = await action(
         'INSERT INTO `users` (`name`, `surname`) VALUES (?, ?)', 
-        name,
+        DBname,
         [user.name, user.surname]);
 
     return result;
 }
 
-async function index_delete(user, name) {
-    if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
+async function index_delete_user(user, DBname) {
+    if (!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [result] = await action(
-        'DELETE FROM users WHERE `name` = ? AND `surname` = ?', 
-        name,
-        [user.name, user.surname]);
+        'DELETE FROM `users` WHERE `name` = ? AND `surname` = ?', 
+        DBname,
+        [user.name, user.surname]
+    );
 
     return result;
 }
 
-async function index_update(user, userChanged, name) {
-    if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
-    
+async function index_update_user(user_toupdate, user_updated, DBname) {
     const [result] = await action(
-        'UPDATE users SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?',
-        name,
-        [userChanged.name, userChanged.surname, user.name, user.surname]);
+        'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?', 
+        DBname,
+        [user_updated.name, user_updated.surname, user_toupdate.name, user_toupdate.surname]
+    );
+
     return result;
 }
+
 
 // Dodane na potrzeby index.js
 
 module.exports = {
     workOnDataBase,
     action,
-
-    //Dodane na potrzeby index.js
-    index_update, index_delete, index_create_db, index_get_user, index_get_all_users, index_create, DBUser
+    index_create_db,
+    index_get_user,
+    index_get_all_users,
+    index_create_user,
+    index_delete_user,
+    index_update_user,
+    DBUser
 };
 
