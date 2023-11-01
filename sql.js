@@ -86,13 +86,35 @@ async function index_get_all_users() {
    return rows
 }
 
-async function index_create(user) {
+async function index_create_user(user) {
     if(!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
     
     const [result] = await action(
         'INSERT INTO `users` (`name`, `surname`) VALUES (?, ?)', 
         INDEX_DB_NAME,
         [user.name, user.surname]);
+
+    return result;
+}
+
+async function index_delete_user(user) {
+    if (!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
+    
+    const [result] = await action(
+        'DELETE FROM `users` WHERE `name` = ? AND `surname` = ?', 
+        INDEX_DB_NAME,
+        [user.name, user.surname]
+    );
+
+    return result;
+}
+
+async function index_update_user(user_toupdate, user_updated) {
+    const [result] = await action(
+        'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?', 
+        INDEX_DB_NAME,
+        [user_updated.name, user_updated.surname, user_toupdate.name, user_toupdate.surname]
+    );
 
     return result;
 }
@@ -106,6 +128,12 @@ module.exports = {
     action,
 
     //Dodane na potrzeby index.js
-    index_create_db, index_get_user, index_get_all_users, index_create, DBUser
+    index_create_db,
+    index_get_user,
+    index_get_all_users,
+    index_create_user,
+    index_delete_user,
+    index_update_user,
+    DBUser
 };
 
