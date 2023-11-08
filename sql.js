@@ -71,6 +71,7 @@ async function index_get_user_id(user, DBname) {
         'SELECT id FROM `users` WHERE `name` = ? AND `surname` = ?',
         DBname,
         [user.name, user.surname]);
+
     console.log(rows[0].id)
     return rows[0].id;
 }
@@ -93,27 +94,23 @@ async function index_create_user(user, DBname) {
     return result;
 }
 
-async function index_delete_user(id, DBname) {
+async function index_delete_user(user, DBname) {
     const [result] = await action(
-        'DELETE FROM `users` WHERE `id` = ? ',
+        'DELETE FROM `users` WHERE `name` = ? AND `surname` = ?',
         DBname,
         [id]
     );
-    if (result.affectedRows === 0) {
-        throw new Error("User with the given ID not found");
-    }
+
     return result;
 }
 
 async function index_update_user(user_id, user_updated, DBname) {
     const [result] = await action(
-        'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `id` = ?',
+        'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?',
         DBname,
         [user_updated.name, user_updated.surname, user_id]
     );
-    if (result.affectedRows === 0) {
-        throw new Error("User with the given ID not found");
-    }
+
     return result;
 }
 

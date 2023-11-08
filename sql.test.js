@@ -86,6 +86,7 @@ describe("MySQL Functions", () => {
             expect(err.message).toBe("User with the given ID not found");
         }
     });
+
     test("index_get_all_users can read", async () => {
         await sqljs.action("INSERT INTO users (name, surname) VALUES ('Marcin', 'Tester')", INDEX_DB_NAME);
         await sqljs.action("INSERT INTO users (name, surname) VALUES ('Marcin', 'Kwiater')", INDEX_DB_NAME);
