@@ -159,7 +159,7 @@
                     while(user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
                     for(const user of data) {
                         const li = document.createElement("li")
-                        li.textContent = `Username: ${user.name}, Surname: ${user.surname}`
+                        li.textContent = `Id: ${user.id} Username: ${user.name}, Surname: ${user.surname}`
                         user_userlist.appendChild(li)
                     }
                 }
