@@ -1,104 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <div>
-        <span id="server-msg"></span>
+    <div id="server-msg" class="alert alert-success transition ease-in-out scale-y-0">
+        <span id="server-msg-textcontent"></span>
     </div>
-    <hr>
-    <div>
-        <h2>Add user</h2>
-        <table>
-            <tr>
-                <td>Username:</td>
-                <td>
-                    <input type="text" name="user-name-add">
-                </td>
-            </tr>
-            <tr>
-                <td>Surname:</td>
-                <td>
-                    <input type="text" name="user-surname-add">
-                </td>
-            </tr>
+    <div class="flex flex-wrap items-center justify-center items-stretch">
+        <div class="md:w-1/4 w-full p-4 mx-4 h-full">
+            <h2 class="underline text-xl">Add user</h2>
+            <label class="label">
+                <span class="label-text">Username:</span>
+            </label>
+            <input type="text" name="user-name-add" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">Surname:</span>
+            </label>
+            <input type="text" name="user-surname-add" class="input input-sm input-bordered input-primary w-full">
+            <br>
+            <button id="user-submit-btn-add" class="btn btn-primary btn-sm w-full my-4">Add user</button>
+        </div>
+        <div class="md:w-1/4 w-full p-4 mx-4 h-full">
+            <h2 class="underline text-xl">Delete user</h2>
+            <label class="label">
+                <span class="label-text">Username:</span>
+            </label>
+            <input type="text" name="user-name-delete" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">Surname:</span>
+            </label>
+            <input type="text" name="user-surname-delete" class="input input-sm input-bordered input-primary w-full">
+            <br>
+            <button id="user-submit-btn-delete" class="btn btn-primary btn-sm w-full my-4">Delete user</button>
+        </div>
+        <div class="md:w-1/4 w-full p-4 mx-4 h-full">
+            <h2 class="underline text-xl">Update user</h2>
+            <label class="label">
+                <span class="label-text">Username:</span>
+            </label>
+            <input type="text" name="user-name-toupdate" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">Surname:</span>
+            </label>
+            <input type="text" name="user-surname-toupdate" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">New username:</span>
+            </label>
+            <input type="text" name="user-name-updated" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">New surname:</span>
+            </label>
+            <input type="text" name="user-surname-updated" class="input input-sm input-bordered input-primary w-full">
+            <br>
+            <button id="user-submit-btn-update" class="btn btn-primary btn-sm w-full my-4">Update user</button>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap items-center items-stretch justify-center">
+        <button class="btn btn-accent w-4/5 block" id="user-get-btn">Show users</button>
+
+        <table class="table w-full">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Surname</th>
+                </tr>
+            </thead>
+            <tbody id="user-userlist"> </tbody>
         </table>
-        <button id="user-submit-btn-add">Add</button>
-    </div>
-    <hr>
-    <div>
-        <h2>Delete user</h2>
-        <table>
-            <tr>
-                <td>Username:</td>
-                <td>
-                    <input type="text" name="user-name-delete">
-                </td>
-            </tr>
-            <tr>
-                <td>Surname:</td>
-                <td>
-                    <input type="text" name="user-surname-delete">
-                </td>
-            </tr>
-        </table>
-        <button id="user-submit-btn-delete">Delete</button>
-    </div>
-    <hr>
-    <div>
-        <h2>Update user</h2>
-        <table>
-            <tr>
-                <td>Username:</td>
-                <td>
-                    <input type="text" name="user-name-toupdate">
-                </td>
-                <td>Username Updated:</td>
-                <td>
-                    <input type="text" name="user-name-updated">
-                </td>
-            </tr>
-            <tr>
-                <td>Surname:</td>
-                <td>
-                    <input type="text" name="user-surname-toupdate">
-                </td>
-                <td>Surname Updated:</td>
-                <td>
-                    <input type="text" name="user-surname-updated">
-                </td>
-            </tr>
-        </table>
-        <button id="user-submit-btn-update">Update</button>
-    </div>
-    <hr>
-    <div>
-        <h2>User list</h2>
-        <button id="user-get-btn">Get users</button>
-        <ul id="user-userlist"></ul>
     </div>
 
     <script>
-        const show_server_error_message = (msg) => {
+        const set_server_response_message = (msg, is_error) => {
             const server_err_msg = document.getElementById("server-msg");
-            server_err_msg.style.color = "red"
-            server_err_msg.textContent = msg
-        }
-        const clear_server_error_message = () => {
-            show_server_error_message("")
-        }
-        const set_server_response_message = (msg) => {
-            const server_err_msg = document.getElementById("server-msg");
-            server_err_msg.style.color = "green"
-            server_err_msg.textContent = msg
+            const server_err_msg_textcontent = document.getElementById("server-msg-textcontent");
+            server_err_msg.classList.remove("alert-success", "alert-error", "scale-y-0")
+            server_err_msg.classList.add(is_error ? "alert-error" : "alert-success")
+            server_err_msg_textcontent.textContent = msg
+
+            if(!is_error) {
+                setTimeout(() => {
+                    server_err_msg_textcontent.textContent = ""
+                    server_err_msg.classList.add(["scale-y-0"])
+                }, 5000)
+            }
         }
         const print_server_response = (res) => {
-            if(!res.ok) {
-                show_server_error_message(res.statusText)
-            } else { set_server_response_message(res.statusText); }
+            set_server_response_message(res.statusText, !res.ok);
         }
         
         document.getElementById("user-submit-btn-add").onclick = () => {
@@ -156,11 +152,25 @@
                 if(res.ok) {
                     const data = await res.json()
                     const user_userlist = document.getElementById("user-userlist")
-                    while(user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
-                    for(const user of data) {
-                        const li = document.createElement("li")
-                        li.textContent = `Id: ${user.id} Username: ${user.name}, Surname: ${user.surname}`
-                        user_userlist.appendChild(li)
+
+                    while (user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
+                    let index = 0;
+                    for (const user of data) {
+                        const tr = document.createElement("tr")
+                        const th = document.createElement("th")
+                        const td_id = document.createElement("td")
+                        const td_username = document.createElement("td")
+                        const td_surname = document.createElement("td")
+                        th.textContent = `${++index}`;
+                        td_id.textContent = user.id;
+                        td_username.textContent = user.name;
+                        td_surname.textContent = user.surname;
+                        tr.appendChild(th)
+                        tr.appendChild(td_id)
+                        tr.appendChild(td_username)
+                        tr.appendChild(td_surname)
+                        user_userlist.appendChild(tr)
+
                     }
                 }
             })
