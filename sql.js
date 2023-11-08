@@ -5,7 +5,7 @@ async function workOnDataBase(sql) {
     var connection = await mysql.createConnection({
         host: "localhost",
         user: "root",  // wpisz własne
-        password: "rooter",   // wpisz własne
+        password: "root",   // wpisz własne
     });
 
     try {
@@ -21,7 +21,7 @@ async function action(sql, db, query_values) {
     var connection = await mysql.createConnection({
         host: "localhost",
         user: "root",   //wpisz własne
-        password: "rooter",    //wpisz własne na zmiane hasła w sql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
+        password: "root",    //wpisz własne na zmiane hasła w sql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
         database: db
     });
 
