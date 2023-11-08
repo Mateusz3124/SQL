@@ -8,7 +8,7 @@ const INDEX_DB_NAME = "indexdb";
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.sendFile("index.html", {root: __dirname})
+    res.sendFile("index.html", { root: __dirname })
 })
 
 app.post('/adduser', (req, res) => {
@@ -27,30 +27,28 @@ app.get(('/getusers'), async (req, res) => {
         const users = await sqljs.index_get_all_users(INDEX_DB_NAME)
         console.log(users)
         res.status(200).send(users)
-    } catch(err) {
+    } catch (err) {
         res.sendStatus(500)
     }
 })
 
-app.delete('/deleteuser', (req, res) => {
+app.delete('/deleteuser', async (req, res) => {
     try {
-        const user_to_delete = new sqljs.DBUser(req.query.name, req.query.surname);
-        sqljs.index_delete_user(user_to_delete, INDEX_DB_NAME);
+        const id = req.query.id;
+        await sqljs.index_delete_user(id, INDEX_DB_NAME);
         res.sendStatus(200);
     } catch (err) {
-        console.error(err);
         res.status(400).send(err);
     }
 });
 
-app.put('/updateuser', (req, res) => {
+app.put('/updateuser', async (req, res) => {
     try {
-        const user_toupdate = new sqljs.DBUser(req.body.nameToUpdate, req.body.surnameToUpdate);
+        const user_id = req.body.idToUpdate;
         const user_updated = new sqljs.DBUser(req.body.updatedName, req.body.updatedSurname);
-        sqljs.index_update_user(user_toupdate, user_updated, INDEX_DB_NAME);
+        await sqljs.index_update_user(user_id, user_updated, INDEX_DB_NAME);
         res.sendStatus(200);
     } catch (err) {
-        console.error(err);
         res.status(400).send(err);
     }
 });
