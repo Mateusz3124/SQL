@@ -51,8 +51,7 @@ describe("MySQL Functions", () => {
     test("index_update should update given information", async () => {
         const olduser = new sqljs.DBUser("Marcin", "Kwiatkowski")
         const newuser = new sqljs.DBUser("Marcin", "Bogaczewicz")
-        const id = await sqljs.index_get_user_id(olduser, INDEX_DB_NAME)
-        await sqljs.index_update_user(id, newuser, INDEX_DB_NAME)
+        await sqljs.index_update_user(olduser, newuser, INDEX_DB_NAME)
         const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         expect(result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Bogaczewicz')).toBe(true);
     });
@@ -72,8 +71,7 @@ describe("MySQL Functions", () => {
         const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         const test1 = result.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha')
         const usertodelete = new sqljs.DBUser("Marcin", "Socha")
-        const id = await sqljs.index_get_user_id(usertodelete, INDEX_DB_NAME)
-        await sqljs.index_delete_user(id, INDEX_DB_NAME);
+        await sqljs.index_delete_user(usertodelete, INDEX_DB_NAME);
         const [result2] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         const test2 = result2.some((obj) => obj.name === 'Marcin' && obj.surname === 'Socha')
         expect(test1 && !test2).toBe(true);
@@ -125,8 +123,7 @@ describe("MySQL Functions", () => {
             await sqljs.index_create_user(newuser, INDEX_DB_NAME);
         }
         let x = new Boolean(false);
-        const id = await sqljs.index_get_user_id(usertodelete, INDEX_DB_NAME)
-        await sqljs.index_delete_user(id, INDEX_DB_NAME);
+        await sqljs.index_delete_user(usertodelete, INDEX_DB_NAME);
         const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         const test = result.some((obj) => obj.name === 'Marcin46' && obj.surname === 'Kwiat')
         expect(!test).toBe(true)
