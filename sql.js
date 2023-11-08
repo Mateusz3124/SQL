@@ -98,17 +98,17 @@ async function index_delete_user(user, DBname) {
     const [result] = await action(
         'DELETE FROM `users` WHERE `name` = ? AND `surname` = ?',
         DBname,
-        [id]
+        [user.name, user.surname]
     );
 
     return result;
 }
 
-async function index_update_user(user_id, user_updated, DBname) {
+async function index_update_user(user_toupdate, user_updated, DBname) {
     const [result] = await action(
         'UPDATE `users` SET `name` = ?, `surname` = ? WHERE `name` = ? AND `surname` = ?',
         DBname,
-        [user_updated.name, user_updated.surname, user_id]
+        [user_updated.name, user_updated.surname, user_toupdate.name, user_toupdate.surname]
     );
 
     return result;

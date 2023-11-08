@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
     <div>
         <span id="server-msg"></span>
@@ -35,9 +33,15 @@
         <h2>Delete user</h2>
         <table>
             <tr>
-                <td>Id:</td>
+                <td>Username:</td>
                 <td>
-                    <input type="text" name="user-id-delete">
+                    <input type="text" name="user-name-delete">
+                </td>
+            </tr>
+            <tr>
+                <td>Surname:</td>
+                <td>
+                    <input type="text" name="user-surname-delete">
                 </td>
             </tr>
         </table>
@@ -48,15 +52,19 @@
         <h2>Update user</h2>
         <table>
             <tr>
-                <td>Id:</td>
+                <td>Username:</td>
                 <td>
-                    <input type="text" name="user-id-toupdate">
+                    <input type="text" name="user-name-toupdate">
                 </td>
-            </tr>
-            <tr>
                 <td>Username Updated:</td>
                 <td>
                     <input type="text" name="user-name-updated">
+                </td>
+            </tr>
+            <tr>
+                <td>Surname:</td>
+                <td>
+                    <input type="text" name="user-surname-toupdate">
                 </td>
                 <td>Surname Updated:</td>
                 <td>
@@ -88,11 +96,11 @@
             server_err_msg.textContent = msg
         }
         const print_server_response = (res) => {
-            if (!res.ok) {
+            if(!res.ok) {
                 show_server_error_message(res.statusText)
             } else { set_server_response_message(res.statusText); }
         }
-
+        
         document.getElementById("user-submit-btn-add").onclick = () => {
             const user_name = document.querySelector("input[name=user-name-add]")
             const user_surname = document.querySelector("input[name=user-surname-add]")
@@ -103,21 +111,25 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ name: user_name.value, surname: user_surname.value })
+                body: JSON.stringify({name: user_name.value, surname: user_surname.value})
             }).then(res => { print_server_response(res) })
         }
-
+        
         document.getElementById("user-submit-btn-delete").onclick = () => {
-            const user_id = document.querySelector("input[name=user-id-delete]")
+            const user_name_delete = document.querySelector("input[name=user-name-delete]")
+            const user_surname_delete = document.querySelector("input[name=user-surname-delete]")
 
-
-            fetch(`/deleteuser?id=${user_id.value}`, {
+            fetch(`/deleteuser?name=${user_name_delete.value}&surname=${user_surname_delete.value}`, {
                 method: "DELETE",
                 mode: "same-origin"
-            }).then(res => { print_server_response(res) })
+            }).then(res => { 
+                print_server_response(res) 
+            })
         }
+
         document.getElementById("user-submit-btn-update").onclick = () => {
-            const user_id_toupdate = document.querySelector("input[name=user-id-toupdate]");
+            const user_name_toupdate = document.querySelector("input[name=user-name-toupdate]");
+            const user_surname_toupdate = document.querySelector("input[name=user-surname-toupdate]");
             const updated_name = document.querySelector("input[name=user-name-updated]");
             const updated_surname = document.querySelector("input[name=user-surname-updated]");
 
@@ -126,22 +138,26 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    idToUpdate: user_id_toupdate.value,
+                body: JSON.stringify({ 
+                    nameToUpdate: user_name_toupdate.value, 
+                    surnameToUpdate: user_surname_toupdate.value,
                     updatedName: updated_name.value,
                     updatedSurname: updated_surname.value
                 })
-            }).then(res => { print_server_response(res) })
-        }
+            }).then(response => {
+                print_server_response(res) 
+            })
+        };
+
 
         document.getElementById("user-get-btn").onclick = () => {
             fetch("/getusers").then(async res => {
                 print_server_response(res)
-                if (res.ok) {
+                if(res.ok) {
                     const data = await res.json()
                     const user_userlist = document.getElementById("user-userlist")
-                    while (user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
-                    for (const user of data) {
+                    while(user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
+                    for(const user of data) {
                         const li = document.createElement("li")
                         li.textContent = `Id: ${user.id} Username: ${user.name}, Surname: ${user.surname}`
                         user_userlist.appendChild(li)
@@ -151,5 +167,4 @@
         }
     </script>
 </body>
-
 </html>
