@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <div id="server-msg" class="alert alert-success transition ease-in-out scale-y-0">
         <span id="server-msg-textcontent"></span>
@@ -30,18 +29,26 @@
         <div class="md:w-1/4 w-full p-4 mx-4 h-full">
             <h2 class="underline text-xl">Delete user</h2>
             <label class="label">
-                <span class="label-text">User id:</span>
+                <span class="label-text">Username:</span>
             </label>
-            <input type="text" name="user-id-delete" class="input input-sm input-bordered input-primary w-full">
+            <input type="text" name="user-name-delete" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">Surname:</span>
+            </label>
+            <input type="text" name="user-surname-delete" class="input input-sm input-bordered input-primary w-full">
             <br>
             <button id="user-submit-btn-delete" class="btn btn-primary btn-sm w-full my-4">Delete user</button>
         </div>
         <div class="md:w-1/4 w-full p-4 mx-4 h-full">
             <h2 class="underline text-xl">Update user</h2>
             <label class="label">
-                <span class="label-text">User id:</span>
+                <span class="label-text">Username:</span>
             </label>
-            <input type="text" name="user-id-toupdate" class="input input-sm input-bordered input-primary w-full">
+            <input type="text" name="user-name-toupdate" class="input input-sm input-bordered input-primary w-full">
+            <label class="label">
+                <span class="label-text">Surname:</span>
+            </label>
+            <input type="text" name="user-surname-toupdate" class="input input-sm input-bordered input-primary w-full">
             <label class="label">
                 <span class="label-text">New username:</span>
             </label>
@@ -89,7 +96,7 @@
         const print_server_response = (res) => {
             set_server_response_message(res.statusText, !res.ok);
         }
-
+        
         document.getElementById("user-submit-btn-add").onclick = () => {
             const user_name = document.querySelector("input[name=user-name-add]")
             const user_surname = document.querySelector("input[name=user-surname-add]")
@@ -100,21 +107,25 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ name: user_name.value, surname: user_surname.value })
+                body: JSON.stringify({name: user_name.value, surname: user_surname.value})
             }).then(res => { print_server_response(res) })
         }
-
+        
         document.getElementById("user-submit-btn-delete").onclick = () => {
-            const user_id = document.querySelector("input[name=user-id-delete]")
+            const user_name_delete = document.querySelector("input[name=user-name-delete]")
+            const user_surname_delete = document.querySelector("input[name=user-surname-delete]")
 
-
-            fetch(`/deleteuser?id=${user_id.value}`, {
+            fetch(`/deleteuser?name=${user_name_delete.value}&surname=${user_surname_delete.value}`, {
                 method: "DELETE",
                 mode: "same-origin"
-            }).then(res => { print_server_response(res) })
+            }).then(res => { 
+                print_server_response(res) 
+            })
         }
+
         document.getElementById("user-submit-btn-update").onclick = () => {
-            const user_id_toupdate = document.querySelector("input[name=user-id-toupdate]");
+            const user_name_toupdate = document.querySelector("input[name=user-name-toupdate]");
+            const user_surname_toupdate = document.querySelector("input[name=user-surname-toupdate]");
             const updated_name = document.querySelector("input[name=user-name-updated]");
             const updated_surname = document.querySelector("input[name=user-surname-updated]");
 
@@ -123,20 +134,25 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    idToUpdate: user_id_toupdate.value,
+                body: JSON.stringify({ 
+                    nameToUpdate: user_name_toupdate.value, 
+                    surnameToUpdate: user_surname_toupdate.value,
                     updatedName: updated_name.value,
                     updatedSurname: updated_surname.value
                 })
-            }).then(res => { print_server_response(res) })
-        }
+            }).then(response => {
+                print_server_response(res) 
+            })
+        };
+
 
         document.getElementById("user-get-btn").onclick = () => {
             fetch("/getusers").then(async res => {
                 print_server_response(res)
-                if (res.ok) {
+                if(res.ok) {
                     const data = await res.json()
                     const user_userlist = document.getElementById("user-userlist")
+
                     while (user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
                     let index = 0;
                     for (const user of data) {
@@ -154,11 +170,11 @@
                         tr.appendChild(td_username)
                         tr.appendChild(td_surname)
                         user_userlist.appendChild(tr)
+
                     }
                 }
             })
         }
     </script>
 </body>
-
 </html>
