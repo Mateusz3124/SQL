@@ -8,30 +8,31 @@ const INDEX_DB_NAME = "indexdb";
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.sendFile("index.html", {root: __dirname})
+    res.sendFile("index.html", {root: __dirname});
 })
 
 app.post('/adduser', (req, res) => {
     try {
-        const newuser = new sqljs.DBUser(req.body.name, req.body.surname)
+        const newuser = new sqljs.DBUser(req.body.name, req.body.surname);
         sqljs.index_create_user(newuser, INDEX_DB_NAME);
         res.statusMessage = "Successfully added new user!";
-        res.sendStatus(200)
+        res.sendStatus(200);
     } catch (err) {
-        console.error(err)
-        res.status(400).send(err)
+        console.error(err);
+        res.statusMessage = "Can't add new user!";
+        res.status(400).send(err);
     }
 })
 
 app.get(('/getusers'), async (req, res) => {
     try {
-        const users = await sqljs.index_get_all_users(INDEX_DB_NAME)
-        console.log(users)
+        const users = await sqljs.index_get_all_users(INDEX_DB_NAME);
+        console.log(users);
         res.statusMessage = "Successfully fetched all users!";
-        res.status(200).send(users)
+        res.status(200).send(users);
     } catch(err) {
-        res.statusMessage = "Couldn't fetch any user!";
-        res.sendStatus(500)
+        res.statusMessage = "Can't fetch any user!";
+        res.sendStatus(500);
     }
 })
 
@@ -43,6 +44,7 @@ app.delete('/deleteuser', (req, res) => {
         res.status(200).end();
     } catch (err) {
         console.error(err);
+        res.statusMessage = "Can't delete user!";
         res.status(400).send(err);
     }
 });
@@ -56,12 +58,12 @@ app.put('/updateuser', (req, res) => {
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
-        res.statusMessage = "Couldn't update user!";
+        res.statusMessage = "Can't update user!";
         res.status(400).send(err);
     }
 });
 
 app.listen(port, async () => {
     await sqljs.index_create_db(INDEX_DB_NAME);
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`);
 })

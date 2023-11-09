@@ -105,7 +105,7 @@ describe("MySQL Functions", () => {
             const newuser = new sqljs.DBUser("Marcin", "Kwiat")
             await sqljs.index_create_user(newuser, INDEX_DB_NAME);
         }
-        let x = new Boolean(false);
+
         const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         let c = 0
         for(let i = 0; i<result.length; i++){
@@ -122,7 +122,7 @@ describe("MySQL Functions", () => {
             const newuser = new sqljs.DBUser("Marcin" + i, "Kwiat")
             await sqljs.index_create_user(newuser, INDEX_DB_NAME);
         }
-        let x = new Boolean(false);
+
         await sqljs.index_delete_user(usertodelete, INDEX_DB_NAME);
         const [result] = await sqljs.action("SELECT * FROM users", INDEX_DB_NAME);
         const test = result.some((obj) => obj.name === 'Marcin46' && obj.surname === 'Kwiat')
