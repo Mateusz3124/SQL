@@ -100,7 +100,7 @@ async function index_delete_user(user, DBname) {
         DBname,
         [user.name, user.surname]
     );
-
+    
     return result;
 }
 
@@ -114,10 +114,7 @@ async function index_update_user(user_toupdate, user_updated, DBname) {
     return result;
 }
 
-
-
 // Dodane na potrzeby index.js
-
 module.exports = {
     workOnDataBase,
     action,
@@ -130,4 +127,3 @@ module.exports = {
     index_update_user,
     DBUser
 };
-

@@ -118,7 +118,7 @@
             fetch(`/deleteuser?name=${user_name_delete.value}&surname=${user_surname_delete.value}`, {
                 method: "DELETE",
                 mode: "same-origin"
-            }).then(res => { 
+            }).then(res => {
                 print_server_response(res) 
             })
         }
@@ -140,7 +140,7 @@
                     updatedName: updated_name.value,
                     updatedSurname: updated_surname.value
                 })
-            }).then(response => {
+            }).then(res => {
                 print_server_response(res) 
             })
         };

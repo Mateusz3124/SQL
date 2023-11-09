@@ -15,6 +15,7 @@ app.post('/adduser', (req, res) => {
     try {
         const newuser = new sqljs.DBUser(req.body.name, req.body.surname)
         sqljs.index_create_user(newuser, INDEX_DB_NAME);
+        res.statusMessage = "Successfully added new user!";
         res.sendStatus(200)
     } catch (err) {
         console.error(err)
@@ -26,8 +27,10 @@ app.get(('/getusers'), async (req, res) => {
     try {
         const users = await sqljs.index_get_all_users(INDEX_DB_NAME)
         console.log(users)
+        res.statusMessage = "Successfully fetched all users!";
         res.status(200).send(users)
     } catch(err) {
+        res.statusMessage = "Couldn't fetch any user!";
         res.sendStatus(500)
     }
 })
@@ -36,7 +39,8 @@ app.delete('/deleteuser', (req, res) => {
     try {
         const user_to_delete = new sqljs.DBUser(req.query.name, req.query.surname);
         sqljs.index_delete_user(user_to_delete, INDEX_DB_NAME);
-        res.sendStatus(200);
+        res.statusMessage = "Successfully deleted user!";
+        res.status(200).end();
     } catch (err) {
         console.error(err);
         res.status(400).send(err);
@@ -48,9 +52,11 @@ app.put('/updateuser', (req, res) => {
         const user_toupdate = new sqljs.DBUser(req.body.nameToUpdate, req.body.surnameToUpdate);
         const user_updated = new sqljs.DBUser(req.body.updatedName, req.body.updatedSurname);
         sqljs.index_update_user(user_toupdate, user_updated, INDEX_DB_NAME);
+        res.statusMessage = "Successfully updated user!";
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
+        res.statusMessage = "Couldn't update user!";
         res.status(400).send(err);
     }
 });
