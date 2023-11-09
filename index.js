@@ -11,10 +11,10 @@ app.get('/', (req, res) => {
     res.sendFile("index.html", {root: __dirname});
 })
 
-app.post('/adduser', (req, res) => {
+app.post('/adduser', async (req, res) => {
     try {
         const newuser = new sqljs.DBUser(req.body.name, req.body.surname);
-        sqljs.index_create_user(newuser, INDEX_DB_NAME);
+        await sqljs.index_create_user(newuser, INDEX_DB_NAME);
         res.statusMessage = "Successfully added new user!";
         res.sendStatus(200);
     } catch (err) {
@@ -36,10 +36,10 @@ app.get(('/getusers'), async (req, res) => {
     }
 })
 
-app.delete('/deleteuser', (req, res) => {
+app.delete('/deleteuser', async (req, res) => {
     try {
         const user_to_delete = new sqljs.DBUser(req.query.name, req.query.surname);
-        sqljs.index_delete_user(user_to_delete, INDEX_DB_NAME);
+        await sqljs.index_delete_user(user_to_delete, INDEX_DB_NAME);
         res.statusMessage = "Successfully deleted user!";
         res.status(200).end();
     } catch (err) {
@@ -49,11 +49,11 @@ app.delete('/deleteuser', (req, res) => {
     }
 });
 
-app.put('/updateuser', (req, res) => {
+app.put('/updateuser',async (req, res) => {
     try {
         const user_toupdate = new sqljs.DBUser(req.body.nameToUpdate, req.body.surnameToUpdate);
         const user_updated = new sqljs.DBUser(req.body.updatedName, req.body.updatedSurname);
-        sqljs.index_update_user(user_toupdate, user_updated, INDEX_DB_NAME);
+        await sqljs.index_update_user(user_toupdate, user_updated, INDEX_DB_NAME);
         res.statusMessage = "Successfully updated user!";
         res.sendStatus(200);
     } catch (err) {

@@ -27,7 +27,7 @@ describe("MySQL Functions", () => {
         ["", "Kwiatkowski"],
         ["Jan", ""],
         ["", ""],
-    ])("index_create should throw an exception when new user name or surname is empty", async (name, surname) => {
+    ])("DBUser should throw an exception when new user name or surname is empty", async (name, surname) => {
         try {
             const newuser = new sqljs.DBUser(name, surname);
         } catch (err) {
@@ -40,7 +40,7 @@ describe("MySQL Functions", () => {
         [1, "Kwiatkowski"],
         ["Jan", 1],
         [1, 1],
-    ])("index_create should throw an exception when new user name or surname is not string", async (name, surname) => {
+    ])("DBUser should throw an exception when new user name or surname is not string", async (name, surname) => {
         try {
             const newuser = new sqljs.DBUser(name, surname);
         } catch (err) {
@@ -57,10 +57,11 @@ describe("MySQL Functions", () => {
     });
 
 
-    test("index_update should throw exception when user with given id doesnt exist", async () => {
+    test("index_update should throw exception when user doesn't exist", async () => {
         try {
+            const nonexistinguser = new sqljs.DBUser("IncorrectName", "IncorrectSurname")
             const newuser = new sqljs.DBUser("Marcin", "Bogaczewicz")
-            await sqljs.index_update_user(10, newuser, INDEX_DB_NAME)
+            await sqljs.index_update_user(nonexistinguser, newuser, INDEX_DB_NAME)
         } catch (err) {
             expect(err.message).toBe("User with the given ID not found");
         }
@@ -77,13 +78,40 @@ describe("MySQL Functions", () => {
         expect(test1 && !test2).toBe(true);
     });
     
-    test("index_delete should throw exception when user with given id doesnt exist", async () => {
+    test("index_delete should throw exception when user doesn't exist", async () => {
         try {
-            await sqljs.index_delete_user(10, INDEX_DB_NAME)
+            const nonexistinguser = new sqljs.DBUser("IncorrectName", "IncorrectSurname")
+            await sqljs.index_delete_user(nonexistinguser, INDEX_DB_NAME)
         } catch (err) {
             expect(err.message).toBe("User with the given ID not found");
         }
     });
+        
+    test("index_create_user should throw exception when user name is too long", async () => {
+        try {
+            b = "ala"
+            for( i = 0; i <298; i++){
+                b = b+'a';
+            }
+            const nonexistinguser = new sqljs.DBUser(b, "IncorrectSurname")
+            await sqljs.index_create_user(nonexistinguser, INDEX_DB_NAME)
+        } catch (err) {
+            expect(err.message).toBe("Data too long for column 'name' at row 1");
+        }
+    });
+    test("index_create_user should throw exception when user surname is too long", async () => {
+        try {
+            b = "ala"
+            for( i = 0; i <298; i++){
+                b = b+'a';
+            }
+            const nonexistinguser = new sqljs.DBUser("Mateusz", b)
+            await sqljs.index_create_user(nonexistinguser, INDEX_DB_NAME)
+        } catch (err) {
+            expect(err.message).toBe("Data too long for column 'surname' at row 1");
+        }
+    });
+
 
     test("index_get_all_users can read", async () => {
         await sqljs.action("INSERT INTO users (name, surname) VALUES ('Marcin', 'Tester')", INDEX_DB_NAME);

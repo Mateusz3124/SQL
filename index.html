@@ -96,7 +96,33 @@
         const print_server_response = (res) => {
             set_server_response_message(res.statusText, !res.ok);
         }
-        
+        const update_list = () => {
+                fetch("/getusers").then(async res => {
+                if(res.ok) {
+                    const data = await res.json()
+                    const user_userlist = document.getElementById("user-userlist")
+
+                    while (user_userlist.firstChild) { user_userlist.removeChild(user_userlist.firstChild); }
+                    let index = 0;
+                    for (const user of data) {
+                        const tr = document.createElement("tr")
+                        const th = document.createElement("th")
+                        const td_id = document.createElement("td")
+                        const td_username = document.createElement("td")
+                        const td_surname = document.createElement("td")
+                        th.textContent = ``;
+                        td_id.textContent = user.id;
+                        td_username.textContent = user.name;
+                        td_surname.textContent = user.surname;
+                        tr.appendChild(th)
+                        tr.appendChild(td_id)
+                        tr.appendChild(td_username)
+                        tr.appendChild(td_surname)
+                        user_userlist.appendChild(tr)
+
+                    }
+                }
+        })}
         document.getElementById("user-submit-btn-add").onclick = () => {
             const user_name = document.querySelector("input[name=user-name-add]")
             const user_surname = document.querySelector("input[name=user-surname-add]")
@@ -108,7 +134,7 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({name: user_name.value, surname: user_surname.value})
-            }).then(res => { print_server_response(res) })
+            }).then(res => { print_server_response(res) }).then(res => {update_list()})
         }
         
         document.getElementById("user-submit-btn-delete").onclick = () => {
@@ -120,7 +146,7 @@
                 mode: "same-origin"
             }).then(res => {
                 print_server_response(res) 
-            })
+            }).then(res => {update_list()})
         }
 
         document.getElementById("user-submit-btn-update").onclick = () => {
@@ -142,7 +168,7 @@
                 })
             }).then(res => {
                 print_server_response(res) 
-            })
+            }).then(res => {update_list()})
         };
 
 

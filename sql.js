@@ -60,7 +60,9 @@ async function index_get_user(user, DBname) {
         'SELECT * FROM `users` WHERE `name` = ? AND `surname` = ?',
         DBname,
         [user.name, user.surname]);
-
+    if (rows.affectedRows === 0) {
+        throw new Error("User with the given ID not found");
+    }    
     return rows;
 }
 
@@ -100,7 +102,9 @@ async function index_delete_user(user, DBname) {
         DBname,
         [user.name, user.surname]
     );
-    
+    if (result.affectedRows === 0) {
+        throw new Error("User with the given ID not found");
+    }
     return result;
 }
 
@@ -110,7 +114,9 @@ async function index_update_user(user_toupdate, user_updated, DBname) {
         DBname,
         [user_updated.name, user_updated.surname, user_toupdate.name, user_toupdate.surname]
     );
-
+    if (result.affectedRows === 0) {
+        throw new Error("User with the given ID not found");
+    }
     return result;
 }
 
