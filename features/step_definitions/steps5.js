@@ -19,7 +19,8 @@ When('I search for the user in the database', async function () {
 });
 
 Then('the system should display that user', async function () {
-    if(result.name !== 'Marcin' && result.surname !== 'Tester') {
+    result = result[0];
+    if(result.name != 'Marcin' && result.surname != 'Tester') {
         throw new Error("User not found in database")
     }
     await sqljs.workOnDataBase("DROP DATABASE IF EXISTS mytest");
