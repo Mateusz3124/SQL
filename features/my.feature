@@ -33,4 +33,19 @@ Scenario: Search user
     When I search for the user in the database
     Then the system should display that user
 
+Scenario: Search non-existent user
+    Given I have a database with existing users
+    And I know name and surname of non-existing user
+    When I search for that user in the database
+    Then the system should display nothing
 
+Scenario: Add already existing user
+    Given I have a user with Name and Surname
+    And i have database with that user already existing
+    When I add the user again to the database
+    Then the new user should not be in the database
+
+Scenario: Create already existing Database
+    Given the name of the new database
+    When I create the new database and there is already a database with that name
+    Then the database should not be created with a new table
