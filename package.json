@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cucumber": "^6.0.7",
     "save-dev": "^0.0.1-security"
   },
   "devDependencies": {

@@ -49,3 +49,29 @@ Scenario: Create already existing Database
     Given the name of the new database
     When I create the new database and there is already a database with that name
     Then the database should not be created with a new table
+
+Scenario: Create a DBUser object with valid information
+    Given a valid user name "Andrzej" and surname "Sqlowski"
+    When I create a DBUser with the provided information
+    Then the DBUser should be created successfully
+    And the DBUser's name should be "Andrzej"
+    And the DBUser's surname should be "Sqlowski"
+
+Scenario: Update non-existent user
+    Given I have a ready database
+    And I don't have a user with Name "Piotr" and Surname "Parker"
+    When I try to update the non-existent user to the database
+    Then the system should reject the update
+
+Scenario: Delete non-existent user
+    Given I have prepared a database
+    And I do not have a user with Name "Rafal" and Surname "Bazodanowy"
+    When I try to delete the non-existent user from the database
+    Then the system should reject the deletion
+
+Scenario: Add user to non-existent database
+    Given I have created a user with Name "Bronislawa" and Surname "Kowalska"
+    And I don't have a database
+    When I am trying to add the user to the database
+    Then the user addition operation should fail
+
