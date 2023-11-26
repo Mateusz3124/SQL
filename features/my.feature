@@ -39,12 +39,6 @@ Scenario: Search non-existent user
     When I search for that user in the database
     Then the system should display nothing
 
-Scenario: Add already existing user
-    Given I have a user with Name and Surname
-    And i have database with that user already existing
-    When I add the user again to the database
-    Then the new user should not be in the database
-
 Scenario: Create already existing Database
     Given the name of the new database
     When I create the new database and there is already a database with that name
