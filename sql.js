@@ -62,7 +62,7 @@ async function index_get_user(user, DBname) {
         [user.name, user.surname]);
     if (rows.affectedRows === 0) {
         throw new Error("User with the given ID not found");
-    }    
+    }
     return rows;
 }
 
@@ -87,7 +87,7 @@ async function index_get_all_users(name) {
 
 async function index_create_user(user, DBname) {
     if (!(user instanceof DBUser)) { throw new Error("User parameter must be of type DBUser."); }
-
+   
     const [result] = await action(
         'INSERT INTO `users` (`name`, `surname`) VALUES (?, ?)',
         DBname,

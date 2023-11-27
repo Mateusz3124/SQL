@@ -1,5 +1,6 @@
 const {Given, When, Then} = require('@cucumber/cucumber')
 const sqljs = require('../.././sql.js')
+const commonSteps = require('./commonSteps.js');
 const INDEX_DB_NAME = "mytest";
 var newuser;
 
@@ -7,9 +8,7 @@ Given('I have a user with Name {string} and Surname {string}', function (name, s
     newuser = new sqljs.DBUser(name, surname);
 });
 
-Given('I have database', async function () {
-    await sqljs.index_create_db(INDEX_DB_NAME);
-});
+commonSteps['I have a database'];
 
 When('I add the user to the database', async function () {
     await sqljs.index_create_user(newuser, INDEX_DB_NAME);

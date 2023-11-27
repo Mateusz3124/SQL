@@ -2,6 +2,7 @@ const {Given, When, Then} = require('@cucumber/cucumber')
 const sqljs = require('../.././sql.js')
 const INDEX_DB_NAME = "mytest";
 let result;
+
 Given('the name of the new database', async function () {
     await sqljs.index_create_db(INDEX_DB_NAME);
     await sqljs.action("INSERT INTO users (name, surname) VALUES ('Marcin', 'Tester')", INDEX_DB_NAME);
