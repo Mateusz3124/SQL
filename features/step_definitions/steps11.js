@@ -1,12 +1,11 @@
 const {Given, When, Then} = require('@cucumber/cucumber')
 const sqljs = require('../.././sql.js')
+const commonSteps = require('./commonSteps.js');
 const INDEX_DB_NAME = "mytest";
 var user_toupdate;
 var error;
 
-Given('I have prepared a database', async function () {
-    await sqljs.index_create_db(INDEX_DB_NAME);
-});
+commonSteps['I have a database'];
 
 Given('I do not have a user with Name {string} and Surname {string}', function (name, surname) {
     user_toupdate = new sqljs.DBUser(name, surname);

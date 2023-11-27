@@ -1,8 +1,8 @@
 Feature: Action on databases
 
-Scenario: Add user
+Scenario: Add user 
     Given I have a user with Name "Mateusz" and Surname "Sobol"
-    And I have database
+    And I have a database
     When I add the user to the database
     Then the user should be in the database
 
@@ -52,13 +52,13 @@ Scenario: Create a DBUser object with valid information
     And the DBUser's surname should be "Sqlowski"
 
 Scenario: Update non-existent user
-    Given I have a ready database
+    Given I have a database
     And I don't have a user with Name "Piotr" and Surname "Parker"
     When I try to update the non-existent user to the database
     Then the system should reject the update
 
 Scenario: Delete non-existent user
-    Given I have prepared a database
+    Given I have a database
     And I do not have a user with Name "Rafal" and Surname "Bazodanowy"
     When I try to delete the non-existent user from the database
     Then the system should reject the deletion
@@ -69,3 +69,25 @@ Scenario: Add user to non-existent database
     When I am trying to add the user to the database
     Then the user addition operation should fail
 
+Scenario: Create a DBUser object with too long name
+    Given a invalid user too long name and correct surname
+    And I have a database
+    When I am trying to add the user with this data to the database
+    Then database should return error that name is too long
+
+    
+Scenario: Create a DBUser object with too long surname
+    Given a invalid user too long surname and correct name
+    And I have a database
+    When I am trying to add the user with this information to the database
+    Then database should return error that surname is too long
+
+Scenario: Create a DBUser object with non string name
+    Given a invalid user non string name and correct surname   
+    When I am trying to create DBUser
+    Then error should occur
+
+Scenario: Create a DBUser object with non string surname
+    Given a invalid user non string surname and correct name   
+    When I am trying to create DBUser with this data
+    Then error should be thrown
