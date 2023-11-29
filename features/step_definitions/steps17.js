@@ -5,24 +5,22 @@ var INDEX_DB_NAME = "nonExistingDB"
 var newuser;
 var error;
 
-Given('I have created a user with Name {string} and Surname {string}', function (name, surname) {
+Given('I want to delete user with a Name {string} and a Surname {string}', function (name, surname) {
     newuser = new sqljs.DBUser(name, surname);
 });
 
 commonSteps['I don\'t have a database'];
 
-When('I am trying to add the user to the database', async function () {
+When('I am trying to delete the user from the database', async function () {
     try {
-        await sqljs.index_create_user(newuser, INDEX_DB_NAME);
+        await sqljs.index_delete_user(newuser, INDEX_DB_NAME);
     } catch (err) {
-        console.log(INDEX_DB_NAME);
         error = err.message;
     } 
 });
 
-Then('the user addition operation should fail', function () {
+Then('the user deletion operation should fail', function () {
     if (!error.includes("Unknown database")) {
         throw new Error("Expected failure due to non-existent database, but got: " + error);
     } 
 });
-

@@ -7,5 +7,10 @@ Given('I have a database', async function () {
     await sqljs.index_create_db(INDEX_DB_NAME);
 });
 
+Given('I don\'t have a database', function () {
 
+});
 
+Then('the system should show nothing', function () {
+    
+});
